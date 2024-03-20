@@ -1,0 +1,56 @@
+ml-100k:
+  data_name: ml-100k
+  file_name: u.data
+  sep: '\t'
+  header: null
+  names: ["user", "item", "rating", "time_stamp"]
+  exp2imp_threshold: 3.5 # 将评分数据转换为隐式数据的阈值，小于该值的评分数据将被删除
+
+
+ml-1m:
+  data_name: ml-1m
+  file_name: ratings.dat
+  sep: '::'
+  header: null
+  names: ["user", "item", "rating", "time_stamp"]
+  exp2imp_threshold: 3.5 # 将评分数据转换为隐式数据的阈值，小于该值的评分数据将被删除
+
+
+yelp2022:
+  data_name: yelp2022
+  file_name: yelp_academic_dataset_review.csv
+  sep: ','
+  header: 0
+  # names: ["user","item","rating","useful","funny","cool", "time"]
+  names: null
+  exp2imp_threshold: 3.5 # 将评分数据转换为隐式数据的阈值，小于该值的评分数据将被删除
+
+
+CiaoDVD:
+  data_name: CiaoDVD
+  file_name: movie-ratings.txt
+  sep: ','
+  header: null
+  names: ["user", "item",'genreID','reviewID', "rating", "time_stamp"]
+  exp2imp_threshold: 3.5 # 将评分数据转换为隐式数据的阈值，小于该值的评分数据将被删除
+
+
+tt:
+  data_name: tt
+  file_name: data.csv
+  sep: ','
+  header: 0
+  names: null
+  exp2imp_threshold: 3.5 # 将评分数据转换为隐式数据的阈值，小于该值的评分数据将被删除
+
+
+Gowalla:
+  data_name: Gowalla
+  file_name: gowalla_checkins.csv
+  sep: ','
+  header: 0
+  names: ["user", "item", "time"]
+
+
+
+

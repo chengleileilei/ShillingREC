@@ -1,0 +1,37 @@
+MF:
+  embedding_size: 32
+  dropout_prob: 0.2
+  
+LightGCN:
+  embedding_size: 64
+  n_layers: 3
+  reg_weight: 1e-5
+  dropout: 0.0
+  use_all_hops: False
+  norm_adj: True
+  norm_func:
+
+SGL:
+  type: 'ED'                      # (str) The type to generate views. Range in ['ED', 'ND', 'RW'].
+  n_layers: 3                     # (int) The number of layers in SGL. 
+  ssl_tau: 0.5                    # (float) The temperature in softmax.
+  reg_weight: 1e-5                # (float) The L2 regularization weight.
+  ssl_weight: 0.05                # (float) The hyperparameter to control the strengths of SSL.
+  ssl_weight_rating: 0.00005
+  drop_ratio: 0.1                 # (float) The dropout ratio.
+  embedding_size: 64              # (int) The embedding size of users and items.f
+
+NeuMF:
+  mf_embedding_size: 64           # (int) The MF embedding size of user and item. 
+  mlp_embedding_size: 64          # (int) The MLP embedding size of user and item.
+  mlp_hidden_size: [128,64]       # (list of int) The hidden size of each layer in MLP.
+  dropout_prob: 0.1               # (float) The dropout rate in MLP layers. 
+  mf_train: True                  # (bool) Whether to train the MF part of the model.
+  mlp_train: True                 # (bool) Whether to train the MLP part of the model.
+
+  # Parameters of pre-trained models for initialization.
+  use_pretrain: False             # (bool) Whether to use the pre-trained parameters for MF and MLP part.
+  mf_pretrain_path: ~             # (str or None) The path of pre-trained MF part model.
+  mlp_pretrain_path: ~            # (str or None) The path of pre-trained MLP part model.
+
+dgcl:

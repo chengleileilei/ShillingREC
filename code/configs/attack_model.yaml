@@ -1,0 +1,39 @@
+AUSH:
+  attack_epoch: 100
+  lr_g: 0.01
+  lr_d: 0.001
+  optim_g: adam
+  optim_d: adam
+  selected_ids: [3]
+  ZR_ratio: 0.2
+  batch_size: 2
+
+RevAdv:
+  attack_epoch: 100
+  # attack_num : 50
+  # filler_num : 36
+  lr_g : 0.01
+  # lr_g : 1
+
+  # lr_d : 0.001
+  optim_g : adam
+  optim_d : adam
+  surrogate_model :  WMF 
+  epoch_s : 50
+  unroll_steps_s : 1
+  hidden_dim_s : 16
+  lr_s : 0.01
+  weight_decay_s : 0.00001
+  batch_size_s : 16
+  weight_pos_s : 1.0
+  weight_neg_s : 0.0
+  # selected_ids : [3]
+  selected_item_num: 1
+
+LegUP:
+  embedding_size: 32
+  dropout_prob: 0.2
+
+BandwagonAttack:
+  selected_item_num: 1
+

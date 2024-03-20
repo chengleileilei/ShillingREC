@@ -1,0 +1,10 @@
+**/__pycache__/
+code/logs/*
+rawdata/*
+ready_data/*
+work.md
+*.vsdx
+code/main.ipynb
+
+
+
