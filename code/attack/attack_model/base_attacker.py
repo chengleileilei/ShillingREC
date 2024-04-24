@@ -41,7 +41,7 @@ class BaseAttacker(Module):
 
         # print("target_id_list",self.target_id_list)
         # config['target_id_list'] = self.target_id_list.tolist()
-        print(config)
+        # print(config)
         # 优化item_num 逻辑
 
     def get_fake_df(self):
