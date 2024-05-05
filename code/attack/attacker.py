@@ -79,7 +79,7 @@ class Attackdata(object):
         if self.config['target_item_strategy'] == 'popular':
             target_item_info_path = os.path.join(self.cleaned_path,"Train","Attacked","popular_target_item_{}.log".format(config['target_num']))
         elif self.config['target_item_strategy'] == 'random':
-            target_item_info_path = os.path.join(self.cleaned_path,"Train","Attacked","popular_target_item_{}.log".format(config['target_num']))
+            target_item_info_path = os.path.join(self.cleaned_path,"Train","Attacked","random_target_item_{}.log".format(config['target_num']))
         
         if os.path.exists(target_item_info_path):
             with open(target_item_info_path,'r') as f:
