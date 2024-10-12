@@ -52,5 +52,17 @@ Gowalla:
   names: ["user", "item", "time"]
 
 
+lastfm:
+  data_name: lastfm
+  file_name: user_artists.dat
+  sep: '\t'
+  header: 0
+  names: ["user", "item"]
 
+Book-Crossing:
+  data_name: Book-Crossing
+  file_name: Ratings.csv
+  sep: ';'
+  header: 0
+  names: ["user", "item", "rating"]
 

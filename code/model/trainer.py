@@ -66,8 +66,8 @@ class Trainer(object):
                 loss.backward()
                 self.optimizer.step()
                 epoch_loss += loss.item()
-            loss_info = "epoch{}: loss:{}".format(epoch_idx,round(epoch_loss,6))
-            # self.logger.info("epoch{}: loss:{}".format(epoch_idx,epoch_loss))
+            loss_info = "Epoch{}: loss:{}".format(epoch_idx,round(epoch_loss,6))
+            # self.logger.info("Epoch{}: loss:{}".format(epoch_idx,epoch_loss))
 
             eval_res = self._rating_evaluate()
             # print(eval_res)
@@ -127,21 +127,21 @@ class Trainer(object):
                 loss.backward()
                 self.optimizer.step()
                 epoch_loss += loss.item()
-            loss_info = "epoch{}: loss:{}".format(epoch_idx,round(epoch_loss,6))
-            # self.logger.info("epoch{}: loss:{}".format(epoch_idx,epoch_loss))
-            eval_res = self._rank_evaluate()
 
-            # print(eval_res)
-            self.logger.info(loss_info + str(eval_res))
+            rec_eval_res,attacl_eval_res = self._rank_evaluate()
+            self.logger.info("Epoch{}: loss:{}".format(epoch_idx,round(epoch_loss,6)))
+            self.logger.info("Rec metric:{}".format(rec_eval_res))
+            self.logger.info("Attack metric:{}".format(attacl_eval_res))
+
 
             # early stopping
-            current_score = eval_res[0][self.stopping_metric]
+            current_score = rec_eval_res[self.stopping_metric]
             self.best_score, self.cur_step, stop_flag,self.best_info= early_stopping(
                 current_score,
                 self.best_score,
                 self.cur_step,
                 self.best_info,
-                cur_info = str(eval_res),
+                cur_info = str((rec_eval_res,attacl_eval_res)),
                 max_step = self.stopping_step,
                 bigger=self.stopping_bigger)
             

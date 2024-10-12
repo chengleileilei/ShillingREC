@@ -3,7 +3,7 @@ rating:
   epochs: 9999999
   train_batch_size: 16384
   learning_rate: 0.001
-  stopping_step: 20
+  stopping_step: 50
   stopping_metric: MAE            # (str) The evaluation metric for early stopping. 
   stopping_bigger: False       # (bool) Whether to take a bigger valid metric value as a better result.
 

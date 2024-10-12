@@ -61,3 +61,36 @@ class AbstractRecommender(nn.Module):
 
 
 
+
+class AutoEncoderMixin(object):
+    """This is a common part of auto-encoders. All the auto-encoder models should inherit this class,
+    including CDAE, MacridVAE, MultiDAE, MultiVAE, RaCT and RecVAE.
+    The base AutoEncoderMixin class provides basic dataset information and rating matrix function.
+    """
+
+    def build_histroy_items(self, dataset):
+        self.history_item_id, self.history_item_value, _ = dataset.history_item_matrix() # 训练集的matrix
+        self.history_item_id = self.history_item_id.to(self.device)
+        self.history_item_value = self.history_item_value.to(self.device)
+
+    def get_rating_matrix(self, user):
+        r"""Get a batch of user's feature with the user's id and history interaction matrix.
+
+        Args:
+            user (torch.LongTensor): The input tensor that contains user's id, shape: [batch_size, ]
+
+        Returns:
+            torch.FloatTensor: The user's feature of a batch of user, shape: [batch_size, n_items]
+        """
+        # Following lines construct tensor of shape [B,n_items] using the tensor of shape [B,H]
+        col_indices = self.history_item_id[user].flatten()
+        row_indices = torch.arange(user.shape[0]).repeat_interleave(
+            self.history_item_id.shape[1], dim=0
+        )
+        rating_matrix = torch.zeros(1, device=self.device).repeat(
+            user.shape[0], self.n_items
+        )
+        rating_matrix.index_put_(
+            (row_indices, col_indices), self.history_item_value[user].flatten()
+        )
+        return rating_matrix
