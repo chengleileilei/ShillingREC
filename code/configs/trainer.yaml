@@ -1,7 +1,7 @@
 rating:
   # train
   epochs: 9999999
-  train_batch_size: 16384
+  train_batch_size: 8192
   learning_rate: 0.001
   stopping_step: 50
   stopping_metric: MAE            # (str) The evaluation metric for early stopping. 

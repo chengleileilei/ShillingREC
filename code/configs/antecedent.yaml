@@ -9,17 +9,17 @@ item_min: 10
 test_ratio: 0.2
 
 #model
-rec_model: CDAE  # MF NeuMF LightGCN SGL CDAE
+rec_model: LightGCN  # MF NeuMF LightGCN SGL CDAE
 
 # task
-task_type: ranking  # rating, ranking
+task_type: rating  # rating, ranking
 exp2imp_threshold: 3.5 # 将评分数据转换为隐式数据的阈值，小于该值的评分数据将被删除
 
 # attack
 # rating类支持 none, RandomAttack, AverageAttack, LoveHate, AUSH, RevAdv; 
 # ranking类支持 none, RandomAttack, BandwagonAttack, AUSH, RevAdv
-attack_model: RevAdv 
-target_item_strategy: random # popular, random
+attack_model: AUSH 
+target_item_strategy: popular # popular, random
 
 
 #dataset
@@ -41,10 +41,10 @@ target_item_strategy: random # popular, random
 # target_num: 1
 
 
-data_name: lastfm
-attacker_num: 290
-filler_num: 33
-target_num: 2
+# data_name: lastfm
+# attacker_num: 290
+# filler_num: 33
+# target_num: 2
 
 
 
@@ -76,11 +76,19 @@ target_num: 2
 # filler_num: 1
 # target_num: 2
 
-
-
-
 # data_name: Gowalla
 # attacker_num: 10
 # filler_num: 1
 # target_num: 2
 
+
+# data_name: Book-Crossing
+# attacker_num: 1488
+# filler_num: 44
+# target_num: 496
+
+
+data_name: Epinions
+attacker_num: 2642
+filler_num: 23
+target_num: 800
