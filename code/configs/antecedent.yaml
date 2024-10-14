@@ -1,15 +1,15 @@
-debug: 1 # 忽略已存在的数据，重新生成
+debug: 0 # 忽略已存在的数据，重新生成
 seed: 43
 # seed: 29
 device: gpu
 
 # preprocess
-user_min: 1
-item_min: 1
-test_ratio: 0.1
+user_min: 10
+item_min: 10
+test_ratio: 0.2
 
 #model
-rec_model: MF   # MF NeuMF LightGCN SGL 
+rec_model: NeuMF   # MF NeuMF LightGCN SGL 
 
 # task
 task_type: rating  # rating, ranking
@@ -18,7 +18,7 @@ exp2imp_threshold: 3.5 # 将评分数据转换为隐式数据的阈值，小于�
 # attack
 # rating类支持 none, RandomAttack, AverageAttack, LoveHate, AUSH, RevAdv; 
 # ranking类支持 none, RandomAttack, BandwagonAttack, AUSH, RevAdv
-attack_model: RandomAttack 
+attack_model: LoveHate
 target_item_strategy: popular # popular, random
 
 
@@ -43,10 +43,10 @@ target_item_strategy: popular # popular, random
 
 #rating
 
-data_name: ml-100k 
-attacker_num: 200
-filler_num: 80
-target_num: 100
+# data_name: ml-100k 
+# attacker_num: 200
+# filler_num: 80
+# target_num: 100
 
 # data_name: ml-1m
 # attacker_num: 1500
@@ -77,3 +77,7 @@ target_num: 100
 # filler_num: 1
 # target_num: 2
 
+data_name: Epinions
+attacker_num: 2000
+filler_num: 23
+target_num: 500

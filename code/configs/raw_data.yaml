@@ -53,4 +53,9 @@ Gowalla:
 
 
 
-
+Epinions:
+  data_name: Epinions
+  file_name: rating.csv
+  sep: ','
+  header: 0
+  names: ["user", "item", "categoryid", "rating"]

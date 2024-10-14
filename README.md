@@ -7,5 +7,3 @@ ShillingREC is an adversarial robustness evaluation library which supports vario
   <br>
   <b>Figure</b>: ShillingREC Overall Architecture
 </p>
-
-from zj

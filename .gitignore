@@ -6,6 +6,6 @@ work.md
 *.vsdx
 code/main.ipynb
 changes.diff
-
+!.gitkeep
 
 
