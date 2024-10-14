@@ -5,7 +5,6 @@ from scipy.sparse import csr_matrix
 import torch
 from tqdm import tqdm
 
-
 _USER = "user"
 _ITEM = "item"
 _RATING = "rating"
@@ -79,7 +78,7 @@ class Dataset(object):
         src = self.train_user_col
         tgt = self.train_item_col
         if value_field is None:
-            data = np.ones(len(self.train_df)) # 
+            data = np.ones(len(self.train_df))  # 
         print("src.shape:{},tgt.shape:{},data.shape:{}".format(src.shape,tgt.shape,data.shape))
         print("src:{},tgt:{},data:{}".format(src,tgt,data))
         shape = (self.n_users,self.n_items)
@@ -94,7 +93,7 @@ class Dataset(object):
         #     raise NotImplementedError(
         #         f"Sparse matrix format [{form}] has not been implemented."
         #     )
-    
+
     def statistic_info(self):
         train_info = self.get_df_info(self.train_df)
         test_info = self.get_df_info(self.test_df)
@@ -148,6 +147,124 @@ class Dataset(object):
         res.append("common_user_num:{}".format(len(common_user)))
         res.append("common_item_num:{}".format(len(common_item)))
         return res
+    
+    def _history_matrix(self, row, value_field=None, max_history_len=None):
+        """Get dense matrix describe user/item's history interaction records.
+
+        ``history_matrix[i]`` represents ``i``'s history interacted item_id.
+
+        ``history_value[i]`` represents ``i``'s history interaction records' values.
+            ``0`` if ``value_field = None``.
+
+        ``history_len[i]`` represents number of ``i``'s history interaction records.
+
+        ``0`` is used as padding.
+
+        Args:
+            row (str): ``user`` or ``item``.
+            value_field (str, optional): Data of matrix, which should exist in ``self.inter_feat``.
+                Defaults to ``None``.
+            max_history_len (int): The maximum number of history interaction records.
+                Defaults to ``None``.
+
+        Returns:
+            tuple:
+                - History matrix (torch.Tensor): ``history_matrix`` described above.
+                - History values matrix (torch.Tensor): ``history_value`` described above.
+                - History length matrix (torch.Tensor): ``history_len`` described above.
+        """
+        # self._check_field("uid_field", "iid_field")
+
+        # inter_feat = copy.deepcopy(self.inter_feat)
+        # inter_feat.shuffle()
+        user_ids, item_ids = (
+            self.train_user_col,
+            self.train_item_col,
+        )
+
+        # if value_field is None:
+        #     values = np.ones(len(user_ids))
+        # else:
+        #     if value_field not in inter_feat:
+        #         raise ValueError(
+        #             f"Value_field [{value_field}] should be one of `inter_feat`'s features."
+        #         )
+        #     values = inter_feat[value_field].numpy()
+
+        if self.task_type == 'rating':
+            values = self.train_rating_col
+        else:
+            values = np.ones(len(user_ids))
+
+
+
+        if row == "user":
+            row_num, max_col_num = self.n_users, self.n_items
+            row_ids, col_ids = user_ids, item_ids
+        else:
+            row_num, max_col_num = self.n_items, self.n_users
+            row_ids, col_ids = item_ids, user_ids
+
+        history_len = np.zeros(row_num, dtype=np.int64)
+        for row_id in row_ids:
+            history_len[row_id] += 1
+
+        max_inter_num = np.max(history_len)
+        if max_history_len is not None:
+            col_num = min(max_history_len, max_inter_num)
+        else:
+            col_num = max_inter_num
+
+        # if col_num > max_col_num * 0.2:
+        #     self.logger.warning(
+        #         f"Max value of {row}'s history interaction records has reached "
+        #         f"{col_num / max_col_num * 100}% of the total."
+        #     )
+
+        history_matrix = np.zeros((row_num, col_num), dtype=np.int64)
+        history_value = np.zeros((row_num, col_num))
+        history_len[:] = 0
+        for row_id, value, col_id in zip(row_ids, values, col_ids):
+            if history_len[row_id] >= col_num:
+                continue
+            history_matrix[row_id, history_len[row_id]] = col_id
+            history_value[row_id, history_len[row_id]] = value
+            history_len[row_id] += 1
+
+        return (
+            torch.LongTensor(history_matrix),
+            torch.FloatTensor(history_value),
+            torch.LongTensor(history_len),
+        )
+
+    def history_item_matrix(self, value_field=None, max_history_len=None):
+        """Get dense matrix describe user's history interaction records.
+
+        ``history_matrix[i]`` represents user ``i``'s history interacted item_id.
+
+        ``history_value[i]`` represents user ``i``'s history interaction records' values,
+        ``0`` if ``value_field = None``.
+
+        ``history_len[i]`` represents number of user ``i``'s history interaction records.
+
+        ``0`` is used as padding.
+
+        Args:
+            value_field (str, optional): Data of matrix, which should exist in ``self.inter_feat``.
+                Defaults to ``None``.
+
+            max_history_len (int): The maximum number of user's history interaction records.
+                Defaults to ``None``.
+
+        Returns:
+            tuple:
+                - History matrix (torch.Tensor): ``history_matrix`` described above.
+                - History values matrix (torch.Tensor): ``history_value`` described above.
+                - History length matrix (torch.Tensor): ``history_len`` described above.
+        """
+        return self._history_matrix(
+            row="user", value_field=value_field, max_history_len=max_history_len
+        )
     
 
 

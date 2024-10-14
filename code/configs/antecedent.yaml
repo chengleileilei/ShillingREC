@@ -1,10 +1,11 @@
 debug: 0 # 忽略已存在的数据，重新生成
+debug: 0 # 忽略已存在的数据，重新生成
 seed: 43
 # seed: 29
 device: gpu
 
 # preprocess
-user_min: 10
+user_min: 10 # user_min小于1时，可能导致训练集id不连续，报错
 item_min: 10
 test_ratio: 0.2
 
@@ -41,8 +42,19 @@ target_item_strategy: popular # popular, random
 # target_num: 1
 
 
+# data_name: lastfm
+# attacker_num: 290
+# filler_num: 33
+# target_num: 2
+
+
+
 #rating
 
+# data_name: ml-100k 
+# attacker_num: 200
+# filler_num: 80
+# target_num: 100
 # data_name: ml-100k 
 # attacker_num: 200
 # filler_num: 80
@@ -68,9 +80,6 @@ target_item_strategy: popular # popular, random
 # attacker_num: 10
 # filler_num: 1
 # target_num: 2
-
-
-
 
 # data_name: Gowalla
 # attacker_num: 10

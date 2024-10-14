@@ -218,13 +218,12 @@ class AUSH(BaseAttacker):
         selected_patches[selected_patches < 1] = 1
         fake_profiles[:, self.selected_ids] = selected_patches
 
-
         fake_user_id_start = self.train_df[self._USER].max() + 1
         fake_user_id_list = []
         # TODO:fake user 数量存在问题
         for i in range(self.attacker_num):
             fake_user_id_list.extend([fake_user_id_start+i])
-        fake_df = self._fake_profile2df(fake_profiles,fake_user_id_list)
+        fake_df = self._fake_profile2df(fake_profiles,fake_user_id_list)  # fake_user_id_list计算可以放在父类中
         return fake_df
 
     def get_implicit_fake_df(self):

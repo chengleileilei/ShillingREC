@@ -32,11 +32,16 @@ if __name__ == "__main__":
 
     c = Configurator()
     c.add_config(run_path)
+    # device = (
+    #         torch.device("cpu")
+    #         if c['device']=='cpu' or not torch.cuda.is_available()
+    #         else torch.device("cuda:"+str(choose_gpu()))
+    #         )
     device = (
-            torch.device("cpu")
-            if c['device']=='cpu' or not torch.cuda.is_available()
-            else torch.device("cuda:"+str(choose_gpu()))
-            )
+        torch.device("cpu")
+        if c['device']=='cpu' or not torch.cuda.is_available()
+        else torch.device("cuda:0")
+        )
     print(torch.cuda.is_available())
     print(device)
     c['device'] = device
