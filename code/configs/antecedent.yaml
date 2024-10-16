@@ -24,20 +24,20 @@ target_item_strategy: random # popular, random
 #dataset
 # rank:
 
-data_name: ml-100k 
-attacker_num: 180
-filler_num: 50
-target_num: 1
+# data_name: ml-100k 
+# attacker_num: 180
+# filler_num: 50
+# target_num: 1
 
 # data_name: ml-1m
 # attacker_num: 1200
 # filler_num: 76
 # target_num: 5
 
-# data_name: CiaoDVD
-# attacker_num: 40
-# filler_num: 18
-# target_num: 1
+data_name: CiaoDVD
+attacker_num: 40
+filler_num: 18
+target_num: 1
 
 
 # data_name: lastfm

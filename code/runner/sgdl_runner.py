@@ -82,7 +82,7 @@ def SGDLRunner(config):
     logger = Logger(config)
     logger.info("p_id:{}".format(os.getpid()))
 
-    
+
 
     rectool.set_seed(config['seed'])
     mem_manager = data.MemLoader(config,train_df)
@@ -155,10 +155,16 @@ def SGDLRunner(config):
                 torch.save(Recmodel.state_dict(), save_path)
             valid_log.add_row(
                 [valid_result['precision'][0], valid_result['recall'][0], valid_result['ndcg'][0], valid_result['hit'][0], best_epoch]
-            )
+            ) # rec @ topk[0]
             valid_log.add_row(
                 [valid_result_attack['precision'][0], valid_result_attack['recall'][0], valid_result_attack['ndcg'][0], valid_result_attack['hit'][0], best_epoch]
-            )
+            )# attack @ topk[0]
+            valid_log.add_row(
+                [valid_result['precision'][1], valid_result['recall'][1], valid_result['ndcg'][1], valid_result['hit'][1], best_epoch]
+            )# rec @ topk[1]
+            valid_log.add_row(
+                [valid_result_attack['precision'][1], valid_result_attack['recall'][1], valid_result_attack['ndcg'][1], valid_result_attack['hit'][1], best_epoch]
+            )# attack @ topk[2]
             logger.info(str(valid_log))
             if is_stop:
                 break
@@ -178,6 +184,7 @@ def SGDLRunner(config):
             [f'{epoch + 1}/{config["rec_model_p"]["epochs"]}', output_information[0], output_information[1], f'{(time.time()-time_train):.3f}']
         )
         logger.info(str(train_log))
+    logger.info(f'==================Training Finished==================')
 
     # # ========== Test ========== #
     # logger.info(f'=========================Test=========================')
