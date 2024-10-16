@@ -94,6 +94,7 @@ class Attackdata(object):
         config['target_id_list'] = list(target_id_list)
 
 
+        self.train_df['label'] = 0
         if self.attack_model == None or self.attack_model == False or self.attack_model == 'none':
             return self.train_df, self.test_df
         fake_df_dir = os.path.join(self.cleaned_path,"Train","Attacked",self.attack_model,"attacker_num_%s_filler_num_%s_target_num_%s_target_item_strategy_%s"%(self.attacker_num,self.filler_num,self.target_num,self.config["target_item_strategy"]))
@@ -111,7 +112,6 @@ class Attackdata(object):
                 os.makedirs(fake_df_dir)
             fake_df.to_csv(fake_df_path,index=False)
 
-        self.train_df['label'] = 0
         fake_df['label'] = 1
 
         # 合并fake_df 和 train_df

@@ -42,3 +42,35 @@ CDAE:
   embedding_size: 64              # (int) The embedding size of user.
   reg_weight_1: 0.                # (float) L1-regularization weight.
   reg_weight_2: 0.01              # (float) L2-regularization weight.
+
+
+SGDL:
+  batch_size: 128
+  lr: 0.0005
+  test_u_batch_size: 100
+  multicore: 1
+  weight_decay: 0.0001
+  history_len: 10
+  meta_lr: 0.0005
+  schedule_lr: 0.005
+  model: lgn
+  eval_freq: 10
+  stop_step: 4
+  epochs: 1000
+  # lightGCN
+  latent_dim_rec: 64
+  lightGCN_n_layers: 3
+  dropout: 0
+  A_split: False
+  keep_prob: 0.6
+  A_n_fold: 100
+  # LTW
+  input: 1
+  hidden1: 100
+  output: 1
+  # Scheduler
+  schedule_type: gumbel
+  tau: 1.0
+
+
+

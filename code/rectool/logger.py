@@ -42,7 +42,10 @@ class Logger(object):
 
         task_type = config["task_type"]
         rec_model = config["rec_model"]
-        rec_model_p = "_".join([f"{k}_{v}" for k, v in config['rec_model_p'].items()])
+        rec_model_p = "_".join([f"{k}_{v}" for k, v in config["rec_model_p"].items()])
+
+        if rec_model == 'SGDL':
+            rec_model_p = ''
 
         # train config
         lr = config['trainer']["learning_rate"]

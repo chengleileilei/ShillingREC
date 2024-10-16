@@ -16,15 +16,15 @@ class SGL(AbstractRecommender):
         super(SGL, self).__init__(config, dataset)
         self._user = dataset.train_user_col
         self._item = dataset.train_item_col
-        self.embed_dim = config['rec_model_p']["embedding_size"]
-        self.n_layers = int(config['rec_model_p']["n_layers"])
-        self.type = config['rec_model_p']["type"]
-        self.drop_ratio = config['rec_model_p']["drop_ratio"]
-        self.ssl_tau = config['rec_model_p']["ssl_tau"]
-        self.reg_weight = float(config['rec_model_p']["reg_weight"])
-        self.ssl_weight = float(config['rec_model_p']["ssl_weight"])
-        # self.mse_weight = float(config['rec_model_p']["mse_weight"])
-        self.ssl_weight_rating = float(config['rec_model_p']["ssl_weight_rating"])
+        self.embed_dim = config["rec_model_p"]["embedding_size"]
+        self.n_layers = int(config["rec_model_p"]["n_layers"])
+        self.type = config["rec_model_p"]["type"]
+        self.drop_ratio = config["rec_model_p"]["drop_ratio"]
+        self.ssl_tau = config["rec_model_p"]["ssl_tau"]
+        self.reg_weight = float(config["rec_model_p"]["reg_weight"])
+        self.ssl_weight = float(config["rec_model_p"]["ssl_weight"])
+        # self.mse_weight = float(config["rec_model_p"]["mse_weight"])
+        self.ssl_weight_rating = float(config["rec_model_p"]["ssl_weight_rating"])
         self.user_embedding = torch.nn.Embedding(self.n_users, self.embed_dim)
         self.item_embedding = torch.nn.Embedding(self.n_items, self.embed_dim)
         self.reg_loss = EmbLoss()

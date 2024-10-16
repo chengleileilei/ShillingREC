@@ -1,26 +1,8 @@
 from rectool import Configurator
-from attack import Attackdata
-from data import Dataset
-from rectool import get_rec_model,set_seed
-from model import Trainer
+from rectool import set_seed
 import torch
-from rectool import choose_gpu
+from rectool import choose_gpu, get_runner
 import os
-
-def main(config):
-    c.extract_config(rec_model_path,'rec_model','rec_model_p') 
-    c.extract_config(attack_model_path,'attack_model','attack_model_p')
-    c.extract_config(trainer_path,'task_type','trainer')
-    c.extract_config(raw_data_path,'data_name','raw_data')
-
-    ad = Attackdata(config)
-
-    train,test = ad.get_attacked_data(config)
-    dataset = Dataset(train,test,config)
-
-    model = get_rec_model(config['rec_model'])(config,dataset).to(config['device'])
-    trainer = Trainer(model,config)
-    trainer.fit()
 
 if __name__ == "__main__":
     root_dir = os.path.abspath(os.path.dirname(__file__))
@@ -32,16 +14,16 @@ if __name__ == "__main__":
 
     c = Configurator()
     c.add_config(run_path)
-    # device = (
-    #         torch.device("cpu")
-    #         if c['device']=='cpu' or not torch.cuda.is_available()
-    #         else torch.device("cuda:"+str(choose_gpu()))
-    #         )
     device = (
-        torch.device("cpu")
-        if c['device']=='cpu' or not torch.cuda.is_available()
-        else torch.device("cuda:0")
-        )
+            torch.device("cpu")
+            if c['device']=='cpu' or not torch.cuda.is_available()
+            else torch.device("cuda:"+str(choose_gpu()))
+            )
+    # device = (
+    #     torch.device("cpu")
+    #     if c['device']=='cpu' or not torch.cuda.is_available()
+    #     else torch.device("cuda:0")
+    #     )
     print(torch.cuda.is_available())
     print(device)
     c['device'] = device
@@ -55,8 +37,20 @@ if __name__ == "__main__":
     #         config['attacker_num'] = attacker_num
     #         config['model_name'] = model
     #         main(config,c)
+    c.extract_config(rec_model_path,'rec_model','rec_model_p') 
+    c.extract_config(attack_model_path,'attack_model','attack_model_p')
+    c.extract_config(trainer_path,'task_type','trainer')
+    c.extract_config(raw_data_path,'data_name','raw_data')
 
-    main(c)
+    print(c.rec_model)
+
+    runner = get_runner(c['rec_model'])
+    runner(c)
+    
+    
+    
+    
+    # main(c)
 
 
     # attack_model = ["none", "RandomAttack", 'AverageAttack', 'LoveHate', 'AUSH']

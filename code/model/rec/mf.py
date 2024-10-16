@@ -7,8 +7,8 @@ class MF(AbstractRecommender):
     def __init__(self,config, dataset):
         super(MF,self).__init__(config, dataset)
 
-        self.embedding_size = config['rec_model_p']["embedding_size"]
-        self.dropout_prob = config['rec_model_p']["dropout_prob"]
+        self.embedding_size = config["rec_model_p"]["embedding_size"]
+        self.dropout_prob = config["rec_model_p"]["dropout_prob"]
         
         self.user_embedding = nn.Embedding(self.n_users,self.embedding_size)
         self.user_bias = nn.Embedding(self.n_users,1)

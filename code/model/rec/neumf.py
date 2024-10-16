@@ -14,18 +14,18 @@ class NeuMF(AbstractRecommender):
         super(NeuMF, self).__init__(config, dataset)
 
         # load dataset info
-        # self.LABEL = config['rec_model_p']["LABEL_FIELD"]
+        # self.LABEL = config["rec_model_p"]["LABEL_FIELD"]
 
         # load parameters info
-        self.mf_embedding_size = config['rec_model_p']["mf_embedding_size"]
-        self.mlp_embedding_size = config['rec_model_p']["mlp_embedding_size"]
-        self.mlp_hidden_size = config['rec_model_p']["mlp_hidden_size"]
-        self.dropout_prob = config['rec_model_p']["dropout_prob"]
-        self.mf_train = config['rec_model_p']["mf_train"]
-        self.mlp_train = config['rec_model_p']["mlp_train"]
-        self.use_pretrain = config['rec_model_p']["use_pretrain"]
-        self.mf_pretrain_path = config['rec_model_p']["mf_pretrain_path"]
-        self.mlp_pretrain_path = config['rec_model_p']["mlp_pretrain_path"]
+        self.mf_embedding_size = config["rec_model_p"]["mf_embedding_size"]
+        self.mlp_embedding_size = config["rec_model_p"]["mlp_embedding_size"]
+        self.mlp_hidden_size = config["rec_model_p"]["mlp_hidden_size"]
+        self.dropout_prob = config["rec_model_p"]["dropout_prob"]
+        self.mf_train = config["rec_model_p"]["mf_train"]
+        self.mlp_train = config["rec_model_p"]["mlp_train"]
+        self.use_pretrain = config["rec_model_p"]["use_pretrain"]
+        self.mf_pretrain_path = config["rec_model_p"]["mf_pretrain_path"]
+        self.mlp_pretrain_path = config["rec_model_p"]["mlp_pretrain_path"]
 
         # define layers and loss
         self.user_mf_embedding = nn.Embedding(self.n_users, self.mf_embedding_size)

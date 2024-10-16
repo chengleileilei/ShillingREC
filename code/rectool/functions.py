@@ -1,4 +1,4 @@
-__all__ = ["get_rec_model","get_attack_model","filler_filter_mat","pick_optim","set_seed","VarDim","getPopularItemId"]
+# __all__ = ["get_rec_model","get_attack_model","filler_filter_mat","pick_optim","set_seed","VarDim","getPopularItemId"]
 
 import importlib
 from torch import optim
@@ -31,6 +31,28 @@ def get_attack_model(model_name):
     return model
 
 # 优化为1个函数
+
+def get_runner(model_name):
+    """
+    根据模型名称获取模型
+    """
+    try:
+        return getattr(
+            importlib.import_module("runner"), model_name + "Runner"
+        )
+    except AttributeError:
+        return getattr(importlib.import_module("runner"), "generalRunner")
+        # if model_type == ModelType.KNOWLEDGE:
+        #     return getattr(importlib.import_module("runner"), "KGTrainer")
+        # elif model_type == ModelType.TRADITIONAL:
+        #     return getattr(
+        #         importlib.import_module("runner"), "TraditionalTrainer"
+        #     )
+        # else:
+        #     return getattr(importlib.import_module("runner"), "Trainer")
+
+
+
 
 
 def filler_filter_mat(train_mat, target_id_list=[], selected_ids=[], filler_num=0):

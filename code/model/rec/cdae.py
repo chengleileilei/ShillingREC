@@ -7,13 +7,13 @@ class CDAE(AbstractRecommender,AutoEncoderMixin):
     def __init__(self,config, dataset):
         super(CDAE,self).__init__(config, dataset)
 
-        self.reg_weight_1 = config['rec_model_p']["reg_weight_1"]
-        self.reg_weight_2 = config['rec_model_p']["reg_weight_2"]
-        self.loss_type = config['rec_model_p']["loss_type"]
-        self.hid_activation = config['rec_model_p']["hid_activation"]
-        self.out_activation = config['rec_model_p']["out_activation"]
-        self.embedding_size = config['rec_model_p']["embedding_size"]
-        self.corruption_ratio = config['rec_model_p']["corruption_ratio"]
+        self.reg_weight_1 = config["rec_model_p"]["reg_weight_1"]
+        self.reg_weight_2 = config["rec_model_p"]["reg_weight_2"]
+        self.loss_type = config["rec_model_p"]["loss_type"]
+        self.hid_activation = config["rec_model_p"]["hid_activation"]
+        self.out_activation = config["rec_model_p"]["out_activation"]
+        self.embedding_size = config["rec_model_p"]["embedding_size"]
+        self.corruption_ratio = config["rec_model_p"]["corruption_ratio"]
 
         self.build_histroy_items(dataset) # 区分rating和rank任务，rating任务value为分数，rank为0/1
 

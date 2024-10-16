@@ -17,11 +17,11 @@ class LightGCN(AbstractRecommender):
         self.interaction_matrix = dataset.inter_matrix(form="coo").astype(np.float32)
 
         # load parameters info
-        self.latent_dim = config['rec_model_p'][
+        self.latent_dim = config["rec_model_p"][
             "embedding_size"
         ]  # int type:the embedding size of lightGCN
-        self.n_layers = config['rec_model_p']["n_layers"]  # int type:the layer num of lightGCN
-        self.reg_weight = float(config['rec_model_p'][
+        self.n_layers = config["rec_model_p"]["n_layers"]  # int type:the layer num of lightGCN
+        self.reg_weight = float(config["rec_model_p"][
             "reg_weight"
         ])  # float32 type: the weight decay for l2 normalization
         # self.require_pow = config["require_pow"]
