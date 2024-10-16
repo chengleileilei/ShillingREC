@@ -17,7 +17,7 @@ exp2imp_threshold: 3.5 # 将评分数据转换为隐式数据的阈值，小于�
 # attack
 # rating类支持 none, RandomAttack, AverageAttack, LoveHate, AUSH, RevAdv; 
 # ranking类支持 none, RandomAttack, BandwagonAttack, AUSH, RevAdv
-attack_model: none
+attack_model: RevAdv
 target_item_strategy: random # popular, random
 
 

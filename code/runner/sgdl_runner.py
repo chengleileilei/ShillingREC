@@ -80,14 +80,9 @@ def SGDLRunner(config):
     print(test_df.head())
 
     logger = Logger(config)
+    logger.info("p_id:{}".format(os.getpid()))
 
-
-
-
-
-
-
-
+    
 
     rectool.set_seed(config['seed'])
     mem_manager = data.MemLoader(config,train_df)
