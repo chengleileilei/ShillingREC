@@ -131,22 +131,22 @@ def SGDLRunner(config):
         if epoch % config["rec_model_p"]["eval_freq"] == 0:
             logger.info(f'======================Validation======================')
             valid_log = PrettyTable()
-            valid_log.field_names = ['Precision', 'Recall', 'NDCG', 'Current Best Epoch']
-            valid_result = sgdl_training.test(config, logger, train_dataset, Recmodel, valid=True, multicore=config.multicore)
+            valid_log.field_names = ['Precision', 'Recall', 'NDCG', 'HR', 'Current Best Epoch']
+            valid_result = sgdl_training.test(config, logger, train_dataset, Recmodel, valid=True, multicore=config["rec_model_p"]["multicore"])
             results.append(valid_result)
-            with open('./{}/results_{}_{}.pkl'.format(
-                    config["rec_model_p"]["dataset"],
+            pkl_path = os.path.join(config["path"], 'results_{}_{}.pkl'.format(
+                    config["data_name"],
                     config["rec_model_p"]["lr"],
                     config["rec_model_p"]["meta_lr"]
-            ), 'wb') as f:
+            ))
+            with open(pkl_path, 'wb') as f:
                 pickle.dump(results, f)
             is_stop, is_save = rectool.EarlyStop(results, config["rec_model_p"]["stop_step"])
 
             # save current best model
             if is_save:
                 best_epoch = epoch
-                torch.save(Recmodel.state_dict(), './{}/model_{}_{}_{}_{}_{}_schedule_{}.pth'.format(
-                    config["rec_model_p"]["dataset"],
+                save_path = os.path.join(config["path"], 'model_{}_{}_{}_{}_{}_schedule_{}.pth'.format(
                     config["rec_model_p"]["lr"],
                     config["rec_model_p"]["meta_lr"],
                     config["rec_model_p"]["model"],
@@ -154,8 +154,9 @@ def SGDLRunner(config):
                     config["rec_model_p"]["tau"],
                     config["rec_model_p"]["schedule_lr"]
                 ))
+                torch.save(Recmodel.state_dict(), save_path)
             valid_log.add_row(
-                [valid_result['precision'][0], valid_result['recall'][0], valid_result['ndcg'][0], best_epoch]
+                [valid_result['precision'][0], valid_result['recall'][0], valid_result['ndcg'][0], valid_result['hit'][0], best_epoch]
             )
             logger.info(str(valid_log))
             if is_stop:
@@ -180,7 +181,7 @@ def SGDLRunner(config):
     # ========== Test ========== #
     logger.info(f'=========================Test=========================')
     state = torch.load('./{}/model_{}_{}_{}_{}_{}_schedule_{}.pth'.format(
-                    config["rec_model_p"]["dataset"],
+                    config["data_name"],
                     config["rec_model_p"]["lr"],
                     config["rec_model_p"]["meta_lr"],
                     config["rec_model_p"]["model"],

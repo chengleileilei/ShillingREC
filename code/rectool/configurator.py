@@ -4,6 +4,7 @@ import os
 import sys
 import yaml
 import json
+import copy 
 
 
 class Configurator(object):
@@ -13,7 +14,25 @@ class Configurator(object):
         """
         self._cnf = {}
         self._cmd_args = {}
+    def __deepcopy__(self, memo):
+        # 创建一个新的实例
+        cls = self.__class__
+        result = cls.__new__(cls)
+        memo[id(self)] = result
 
+        # 深拷贝所有属性
+        for k, v in self.__dict__.items():
+            setattr(result, k, copy.deepcopy(v, memo))
+        return result
+    def __getstate__(self):
+        state = self.__dict__.copy()
+        # 你可以在这里移除不需要序列化的属性
+        return state
+
+    def __setstate__(self, state):
+        self.__dict__.update(state)
+
+    
     def add_config(self, cfg_file,):
         """Read and add config from yaml-style file.
         支持加载多个文件，存在冲突时，后面的文件会覆盖前面的文件

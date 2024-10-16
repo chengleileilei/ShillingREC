@@ -1,6 +1,7 @@
 import numpy as np
 import torch
 import torch.nn as nn
+from tqdm import tqdm
 import rectool
 from data import MemLoader, Loader
 from rectool import timer
@@ -339,10 +340,10 @@ def self_guided_train_schedule_gumbel(config, train_dataset, clean_dataset, recm
 
     clean_data_iter = iter(
         rectool.minibatch(users_clean, posItems_clean, negItems_clean, batch_size=config["rec_model_p"]["batch_size"]))
-    for batch_i, (batch_users, batch_pos, batch_neg) in enumerate(rectool.minibatch(users,
+    for batch_i, (batch_users, batch_pos, batch_neg) in tqdm(enumerate(rectool.minibatch(users,
                                                                                   posItems,
                                                                                   negItems,
-                                                                                  batch_size=config["rec_model_p"]["batch_size"])):
+                                                                                  batch_size=config["rec_model_p"]["batch_size"])), total=total_batch):
 
         try:
             batch_users_clean, batch_pos_clean, batch_neg_clean = next(clean_data_iter)
@@ -378,7 +379,7 @@ def self_guided_train_schedule_gumbel(config, train_dataset, clean_dataset, recm
 
         # for each sample, calculate gradients of 2 losses
         input_embedding_cos = []
-        for k in range(len(batch_users_clean)):
+        for k in  range(len(batch_users_clean)) :
             task_grad_cos = []
             grads_theta = grads_theta_list[k]
             grads_theta_hat = torch.autograd.grad(L_theta_hat[k], (meta_model.params()), create_graph=True,
@@ -461,19 +462,22 @@ def self_guided_train_schedule_gumbel(config, train_dataset, clean_dataset, recm
     timer.zero()
     return [f'{train_loss:.5f}', f'{meta_loss:.5f}']
 
-def test_one_batch(X):
+def test_one_batch(args):
+    X, config = args
     sorted_items = X[0].numpy()
     groundTrue = X[1]
     r = rectool.getLabel(groundTrue, sorted_items)
-    pre, recall, ndcg = [], [], []
-    for k in config["topk"]:
+    pre, recall, ndcg, hit = [], [], [], []
+    for k in config["trainer"]["topk"]:
         ret = rectool.RecallPrecision_ATk(groundTrue, r, k)
         pre.append(ret['precision'])
         recall.append(ret['recall'])
         ndcg.append(rectool.NDCGatK_r(groundTrue,r,k))
+        hit.append(rectool.HRatK_r(groundTrue,r,k))
     return {'recall':np.array(recall),
             'precision':np.array(pre),
-            'ndcg':np.array(ndcg)}
+            'ndcg':np.array(ndcg),
+            'hit':np.array(hit)}
 
 def test(config, logger, dataset, Recmodel, valid=True, multicore=0):
     u_batch_size = config["rec_model_p"]["test_u_batch_size"]
@@ -484,13 +488,15 @@ def test(config, logger, dataset, Recmodel, valid=True, multicore=0):
         testDict = dataset.testDict
 
     Recmodel = Recmodel.eval()
-    max_K = max(config["topk"])
+    max_K = max(config["trainer"]["topk"])
 
     if multicore == 1:
         pool = multiprocessing.Pool(CORES)
-    results = {'precision': np.zeros(len(config["topk"])),
-               'recall': np.zeros(len(config["topk"])),
-               'ndcg': np.zeros(len(config["topk"]))}
+    results = {'precision': np.zeros(len(config["trainer"]["topk"])),
+               'recall': np.zeros(len(config["trainer"]["topk"])),
+               'ndcg': np.zeros(len(config["trainer"]["topk"])),
+               'hit': np.zeros(len(config["trainer"]["topk"])),
+               }
     with torch.no_grad():
         users = list(testDict.keys())
         try:
@@ -511,7 +517,8 @@ def test(config, logger, dataset, Recmodel, valid=True, multicore=0):
                         allPos[i] = np.concatenate((allPos[i], validDict[user]))
                     except KeyError:
                         pass
-            groundTrue = [testDict[u] for u in batch_users]
+            # groundTrue = [testDict[u] for u in batch_users]
+            groundTrue = [config['target_id_list'] for u in batch_users]
             batch_users_gpu = torch.Tensor(batch_users).long()
             batch_users_gpu = batch_users_gpu.to(config['device'])
             rating = Recmodel.getUsersRating(batch_users_gpu)
@@ -529,19 +536,22 @@ def test(config, logger, dataset, Recmodel, valid=True, multicore=0):
             groundTrue_list.append(groundTrue)
         assert total_batch == len(users_list)
         X = zip(rating_list, groundTrue_list)
+        X = [(x, config) for x in X]
         if multicore == 1:
             pre_results = pool.map(test_one_batch, X)
         else:
             pre_results = []
             for x in X:
-                pre_results.append(test_one_batch( x))
+                pre_results.append(test_one_batch( (x,config)))
         for result in pre_results:
             results['recall'] += result['recall']
             results['precision'] += result['precision']
             results['ndcg'] += result['ndcg']
+            results['hit'] += result['hit']
         results['recall'] /= float(len(users))
         results['precision'] /= float(len(users))
         results['ndcg'] /= float(len(users))
+        results['hit'] /= float(len(users))
         if multicore == 1:
             pool.close()
         if not valid:

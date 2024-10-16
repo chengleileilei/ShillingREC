@@ -54,7 +54,7 @@ SGDL:
   meta_lr: 0.0005
   schedule_lr: 0.005
   model: lgn
-  eval_freq: 10
+  eval_freq: 2
   stop_step: 4
   epochs: 1000
   # lightGCN

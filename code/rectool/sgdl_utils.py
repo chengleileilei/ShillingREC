@@ -184,6 +184,13 @@ def RecallPrecision_ATk(test_data, r, k):
     precis = np.sum(right_pred)/precis_n
     return {'recall': recall, 'precision': precis}
 
+def HRatK_r(test_data, r, k):
+    """
+    Hit Ratio
+    """
+    pred_data = r[:, :k]
+    hit = np.array([np.sum(np.in1d(test_data[i], pred_data[i])) for i in range(len(test_data))])
+    return np.sum(hit)
 
 def MRRatK_r(r, k):
     """
@@ -215,6 +222,8 @@ def NDCGatK_r(test_data,r,k):
     ndcg = dcg/idcg
     ndcg[np.isnan(ndcg)] = 0.
     return np.sum(ndcg)
+
+
 
 def AUC(all_item_scores, dataset, test_data):
     """

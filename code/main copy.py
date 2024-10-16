@@ -1,13 +1,8 @@
-
-
-from rectool import choose_gpu
-
-choose_gpu() 
-from rectool import get_runner
-import os
 from rectool import Configurator
 from rectool import set_seed
 import torch
+from rectool import choose_gpu, get_runner
+import os
 
 if __name__ == "__main__":
     root_dir = os.path.abspath(os.path.dirname(__file__))
@@ -22,7 +17,7 @@ if __name__ == "__main__":
     device = (
             torch.device("cpu")
             if c['device']=='cpu' or not torch.cuda.is_available()
-            else torch.device("cuda")
+            else torch.device("cuda:"+str(choose_gpu()))
             )
     # device = (
     #     torch.device("cpu")

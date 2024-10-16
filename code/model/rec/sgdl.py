@@ -4,6 +4,7 @@ from torch import nn
 from copy import deepcopy
 from collections import OrderedDict
 from torch.autograd import Variable
+import copy
 
 def to_var(x, requires_grad=True):
     if torch.cuda.is_available():
@@ -100,9 +101,20 @@ class MetaEmbed(MetaModule):
         return self.weight[index]
 
     def named_leaves(self):
-        return [('weight', self.weight), ('bias', self.bias)]
+        return [('weight', self.weight), ('bias', self.bias)] 
 
+class MetaEmbed2(nn.Module):
+    def __init__(self, dim_1, dim_2):
+        super(MetaEmbed, self).__init__()
+        self.weight = nn.Parameter(torch.randn(dim_1, dim_2))
+        self.bias = None
 
+    def forward(self, index):
+        return self.weight[index]
+
+    def named_leaves(self):
+        return [('weight', self.weight), ('bias', self.bias)] 
+ 
 class LightGCN(MetaModule):
     def __init__(self,config, dataset):
         super(LightGCN, self).__init__()
@@ -112,7 +124,17 @@ class LightGCN(MetaModule):
 
         self.__init_weight()
         self.store_params()
+    def __deepcopy__(self, memo):
+        # 创建一个新的实例
+        cls = self.__class__
+        result = cls.__new__(cls)
+        memo[id(self)] = result
 
+        # 深拷贝所有属性
+        for k, v in self.__dict__.items():
+            setattr(result, k, copy.deepcopy(v, memo))
+
+        return result
     def __init_weight(self):
         self.num_users = self.dataset.n_users
         self.num_items = self.dataset.m_items
