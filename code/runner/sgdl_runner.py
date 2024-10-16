@@ -98,6 +98,7 @@ def SGDLRunner(config):
     ltw = LTW(config["rec_model_p"]["input"], config["rec_model_p"]["hidden1"], config["rec_model_p"]["output"]).cuda()
     logger.info(str(config))
     results = []
+    # attack_results = []
     config["rec_model_p"]["lr"] /= 5
     opt = torch.optim.Adam(Recmodel.params(), lr=config["rec_model_p"]["lr"])
 
@@ -133,7 +134,9 @@ def SGDLRunner(config):
             valid_log = PrettyTable()
             valid_log.field_names = ['Precision', 'Recall', 'NDCG', 'HR', 'Current Best Epoch']
             valid_result = sgdl_training.test(config, logger, train_dataset, Recmodel, valid=True, multicore=config["rec_model_p"]["multicore"])
-            results.append(valid_result)
+            results.append(valid_result) # rec eval
+            valid_result_attack = sgdl_training.test_attack(config, logger, train_dataset, Recmodel, valid=True, multicore=config["rec_model_p"]["multicore"])
+            # attack_results.append(valid_result_attack) # attack eval
             pkl_path = os.path.join(config["path"], 'results_{}_{}.pkl'.format(
                     config["data_name"],
                     config["rec_model_p"]["lr"],
@@ -158,6 +161,9 @@ def SGDLRunner(config):
             valid_log.add_row(
                 [valid_result['precision'][0], valid_result['recall'][0], valid_result['ndcg'][0], valid_result['hit'][0], best_epoch]
             )
+            valid_log.add_row(
+                [valid_result_attack['precision'][0], valid_result_attack['recall'][0], valid_result_attack['ndcg'][0], valid_result_attack['hit'][0], best_epoch]
+            )
             logger.info(str(valid_log))
             if is_stop:
                 break
@@ -178,16 +184,16 @@ def SGDLRunner(config):
         )
         logger.info(str(train_log))
 
-    # ========== Test ========== #
-    logger.info(f'=========================Test=========================')
-    state = torch.load('./{}/model_{}_{}_{}_{}_{}_schedule_{}.pth'.format(
-                    config["data_name"],
-                    config["rec_model_p"]["lr"],
-                    config["rec_model_p"]["meta_lr"],
-                    config["rec_model_p"]["model"],
-                    config["rec_model_p"]["schedule_type"],
-                    config["rec_model_p"]["tau"],
-                    config["rec_model_p"]["schedule_lr"]
-                ))
-    Recmodel.load_state_dict(state)
-    sgdl_training.test(config, logger,train_dataset, Recmodel, valid=False, multicore=config["rec_model_p"]["multicore"])
+    # # ========== Test ========== #
+    # logger.info(f'=========================Test=========================')
+    # state = torch.load('./{}/model_{}_{}_{}_{}_{}_schedule_{}.pth'.format(
+    #                 config["data_name"],
+    #                 config["rec_model_p"]["lr"],
+    #                 config["rec_model_p"]["meta_lr"],
+    #                 config["rec_model_p"]["model"],
+    #                 config["rec_model_p"]["schedule_type"],
+    #                 config["rec_model_p"]["tau"],
+    #                 config["rec_model_p"]["schedule_lr"]
+    #             ))
+    # Recmodel.load_state_dict(state)
+    # sgdl_training.test(config, logger,train_dataset, Recmodel, valid=False, multicore=config["rec_model_p"]["multicore"])

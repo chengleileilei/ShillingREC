@@ -517,6 +517,86 @@ def test(config, logger, dataset, Recmodel, valid=True, multicore=0):
                         allPos[i] = np.concatenate((allPos[i], validDict[user]))
                     except KeyError:
                         pass
+            groundTrue = [testDict[u] for u in batch_users]
+            # groundTrue = [config['target_id_list'] for u in batch_users]
+            batch_users_gpu = torch.Tensor(batch_users).long()
+            batch_users_gpu = batch_users_gpu.to(config['device'])
+            rating = Recmodel.getUsersRating(batch_users_gpu)
+            exclude_index = []
+            exclude_items = []
+            for range_i, items in enumerate(allPos):
+                exclude_index.extend([range_i] * len(items))
+                exclude_items.extend(items)
+            rating[exclude_index, exclude_items] = -(1 << 10)
+            _, rating_K = torch.topk(rating, k=max_K)
+            rating = rating.cpu().numpy()
+            del rating
+            users_list.append(batch_users)
+            rating_list.append(rating_K.cpu())
+            groundTrue_list.append(groundTrue)
+        assert total_batch == len(users_list)
+        X = zip(rating_list, groundTrue_list)
+        X = [(x, config) for x in X]
+        if multicore == 1:
+            pre_results = pool.map(test_one_batch, X)
+        else:
+            pre_results = []
+            for x in X:
+                pre_results.append(test_one_batch( (x,config)))
+        for result in pre_results:
+            results['recall'] += result['recall']
+            results['precision'] += result['precision']
+            results['ndcg'] += result['ndcg']
+            results['hit'] += result['hit']
+        results['recall'] /= float(len(users))
+        results['precision'] /= float(len(users))
+        results['ndcg'] /= float(len(users))
+        results['hit'] /= float(len(users))
+        if multicore == 1:
+            pool.close()
+        if not valid:
+            logger.info(str(results))
+
+    return results
+
+def test_attack(config, logger, dataset, Recmodel, valid=True, multicore=0):
+    u_batch_size = config["rec_model_p"]["test_u_batch_size"]
+    dataset: Loader
+    if valid:
+        testDict = dataset.validDict
+    else:
+        testDict = dataset.testDict
+
+    Recmodel = Recmodel.eval()
+    max_K = max(config["trainer"]["topk"])
+
+    if multicore == 1:
+        pool = multiprocessing.Pool(CORES)
+    results = {'precision': np.zeros(len(config["trainer"]["topk"])),
+               'recall': np.zeros(len(config["trainer"]["topk"])),
+               'ndcg': np.zeros(len(config["trainer"]["topk"])),
+               'hit': np.zeros(len(config["trainer"]["topk"])),
+               }
+    with torch.no_grad():
+        users = list(testDict.keys())
+        try:
+            assert u_batch_size <= len(users) / 10
+        except AssertionError:
+            print(f"test_u_batch_size is too big for this dataset, try a small one {len(users) // 10}")
+
+        users_list = []
+        rating_list = []
+        groundTrue_list = []
+        total_batch = len(users) // u_batch_size + 1
+        for batch_users in rectool.minibatch(users, batch_size=u_batch_size):
+            allPos = dataset.getUserPosItems(batch_users)
+            if not valid:
+                validDict = dataset.validDict
+                for i, user in enumerate(batch_users):
+                    try:
+                        allPos[i] = np.concatenate((allPos[i], validDict[user]))
+                    except KeyError:
+                        pass
             # groundTrue = [testDict[u] for u in batch_users]
             groundTrue = [config['target_id_list'] for u in batch_users]
             batch_users_gpu = torch.Tensor(batch_users).long()
@@ -558,7 +638,6 @@ def test(config, logger, dataset, Recmodel, valid=True, multicore=0):
             logger.info(str(results))
 
     return results
-
 def memorization_test(config, dataset, Recmodel):
     '''
     memorization procedure,
